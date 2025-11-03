@@ -208,3 +208,6 @@ __marimo__/
 
 # Ignore dataset processed folder
 */processed/
+
+# Ignore model file
+*.pth
