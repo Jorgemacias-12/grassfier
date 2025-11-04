@@ -8,3 +8,20 @@ export const navigationItems = [
 ];
 
 export type NavigationItems = typeof navigationItems;
+
+export const heroFacts = [
+  {
+    title: "98%",
+    subtitle: "Precisión",
+  },
+  {
+    title: "50+",
+    subtitle: "Enfermedades",
+  },
+  {
+    title: "Instantaneos",
+    subtitle: "Resultados",
+  },
+];
+
+export type HeroFacts = typeof heroFacts;
