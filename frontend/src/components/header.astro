@@ -1,6 +1,6 @@
 ---
-import { Leaf } from "@lucide/astro";
-import { navigationItems } from "../data";
+import { navigationItems } from "@/data";
+import Logo from "./logo.astro";
 ---
 
 <header
@@ -9,17 +9,7 @@ import { navigationItems } from "../data";
   <section
     class="container mx-auto flex h-16 items-center justify-between px-4"
   >
-    <section class="flex items-center gap-2">
-      <a
-        title="home"
-        class="inline-flex h-10 w-10 rounded-md bg-[#0a6802] text-white items-center justify-center"
-        href="/"
-      >
-        <Leaf size={24} />
-      </a>
-
-      <h1 class="text-xl font-bold text-foreground">Grassfier</h1>
-    </section>
+    <Logo />
     <nav class="hidden md:flex gap-4">
       {
         navigationItems.map(({ href, title }) => (
