@@ -1,0 +1,44 @@
+---
+import { Leaf } from "@lucide/astro";
+import { navigationItems } from "../data";
+---
+
+<header
+  class="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+>
+  <section
+    class="container mx-auto flex h-16 items-center justify-between px-4"
+  >
+    <section class="flex items-center gap-2">
+      <a
+        title="home"
+        class="inline-flex h-10 w-10 rounded-md bg-[#0a6802] text-white items-center justify-center"
+        href="/"
+      >
+        <Leaf size={24} />
+      </a>
+
+      <h1 class="text-xl font-bold text-foreground">Grassfier</h1>
+    </section>
+    <nav class="hidden md:flex gap-4">
+      {
+        navigationItems.map(({ href, title }) => (
+          <a
+            class="text-sm font-medium text-foreground hover:text-primary transition-colors"
+            title={title}
+            href={href}
+          >
+            {title}
+          </a>
+        ))
+      }
+    </nav>
+    <section>
+      <button
+        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-9 px-4 py-2 has-[>svg]:px-3 bg-primary hover:bg-primary/90 text-primary-foreground bg-[#0a6802] text-white"
+      >
+        Comenzar
+      </button>
+    </section>
+  </section>
+</header>
