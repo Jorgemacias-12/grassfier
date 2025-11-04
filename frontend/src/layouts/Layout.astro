@@ -11,7 +11,7 @@ import "@fontsource-variable/geist";
     <meta name="generator" content={Astro.generator} />
     <title>Grassfier | Detección de enfermedades de plantas</title>
   </head>
-  <body class="bg-[#f8f8f8]">
+  <body class="bg-[#f8f8f8] antialiased">
     <slot />
   </body>
 </html>
@@ -23,5 +23,7 @@ import "@fontsource-variable/geist";
     width: 100%;
     height: 100%;
     font-family: "Geist Variable", sans-serif;
+    min-height: 100dvh;
+    min-height: 100vh;
   }
 </style>
