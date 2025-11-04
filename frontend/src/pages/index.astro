@@ -1,5 +1,69 @@
 ---
+import Header from "../components/header.astro";
+import { heroFacts } from "../data";
 import Layout from "../layouts/Layout.astro";
+
+import { ArrowRight } from "@lucide/astro";
 ---
 
-<Layout> Buenos dias </Layout>
+<Layout>
+  <Header />
+  <article
+    class="relative overflow-hidden bg-gradient-to-br from-background via-background to-secondary/10 py-20 md:py-32"
+  >
+    <main class="container mx-auto px-4">
+      <section class="grid gap-12 md:grid-cols-2 md:gap-8 items-center">
+        <div class="flex flex-col gap-6">
+          <h2
+            class="text-4xl md:text-5xl font-bold text-foreground leading-tight"
+          >
+            Detecta enfermedades en plantas con <span class="text-[#0a6802]"
+              >IA avanzada</span
+            >
+          </h2>
+
+          <p class="text-lg text-muted-foreground max-w-lg">
+            Grassfier utiliza inteligencia artificial para identificar
+            enfermedades en tus cultivos en tiempo real, permitiendo
+            intervenciones tempranas y decisiones informadas.
+          </p>
+
+          <section class="flex flex-col sm:flex-row gap-4 pt-4">
+            <button
+              class="inline-flex text-white items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-10 rounded-md px-6 has-[>svg]:px-4 bg-[#0a6802] hover:bg-primary/90 text-primary-foreground gap-2"
+            >
+              Comenzar análisis
+
+              <ArrowRight size={20} />
+            </button>
+            <button
+              class="inline-flex border items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-10 rounded-md px-6 has-[>svg]:px-4 hover:bg-primary/90 text-primary-foreground gap-2"
+              >Ver demo</button
+            >
+          </section>
+
+          <section class="flex gap-8 pt-8 border-t border-border">
+            {
+              heroFacts.map(({ title, subtitle }) => (
+                <p class="text-2xl font-bold text-[#0a6802]">
+                  {title}
+                  <span class="text-sm text-[#636363]">{subtitle}</span>
+                </p>
+              ))
+            }
+          </section>
+        </div>
+
+        <div
+          class="relative h-full bg-gradient-to-br from-primary/10 to-accent/10 rounded-2xl border border-primary/20 flex items-center justify-center overflow-hidden"
+        >
+          <img
+            src="/macro-image-leaf.jpg"
+            class="w-full h-full object-cover"
+            alt="leaf image"
+          />
+        </div>
+      </section>
+    </main>
+  </article>
+</Layout>
