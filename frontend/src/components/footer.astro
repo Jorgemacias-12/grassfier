@@ -1,0 +1,55 @@
+---
+import { footerLinks, footerSocialLinks } from "@/data";
+import Logo from "./logo.astro";
+---
+
+<footer class="border-t bg-secondary/5 py-12">
+  <main class="container mx-auto px-4">
+    <section class="grid md:grid-cols-4 gap-8 mb-8">
+      <div class="flex flex-col gap-2">
+        <Logo />
+
+        <p class="text-sm text-[#636363]">
+          Tecnología IA para la agricultura moderna
+        </p>
+      </div>
+
+      {
+        footerLinks.map(({ title, subLinks }) => (
+          <div>
+            <h4 class="font-semibold text-foreground mb-4">{title}</h4>
+
+            <div class="flex flex-col gap-4">
+              {subLinks.map(({ label, href }) => (
+                <a
+                  target="_blank"
+                  class="text-sm text-[#636363] transition-colors hover:text-[#0a6802]"
+                  href={href}
+                >
+                  {label}
+                </a>
+              ))}
+            </div>
+          </div>
+        ))
+      }
+    </section>
+    <section
+      class="border-t border-border pt-8 flex flex-col md:flex-row justify-between items-center gap-4"
+    >
+      <p class="text-sm text-[#636363]">
+        &copy; {new Date().getFullYear()} Grassfier. Todos los derechos reservados.
+      </p>
+
+      <div class="flex items-center gap-4">
+        {
+          footerSocialLinks.map(({ title, href }) => (
+            <a class="text-sm text-[#636363]" title={title} href={href}>
+              {title}
+            </a>
+          ))
+        }
+      </div>
+    </section>
+  </main>
+</footer>
