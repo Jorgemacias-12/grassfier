@@ -13,7 +13,7 @@ import { ArrowRight } from "@lucide/astro";
     class="relative overflow-hidden bg-gradient-to-br from-background via-background to-secondary/10 py-20 md:py-32"
   >
     <main class="container mx-auto px-4">
-      <section class="grid gap-12 md:grid-cols-2 md:gap-8 items-center">
+      <section class="grid md:grid-cols-2 gap-12 md:gap-8 items-center">
         <div class="flex flex-col gap-6">
           <h2
             class="text-4xl md:text-5xl font-bold text-foreground leading-tight"
@@ -43,7 +43,7 @@ import { ArrowRight } from "@lucide/astro";
             >
           </section>
 
-          <section class="flex gap-8 pt-8 border-t border-border">
+          <section class="flex gap-4 pt-8 border-t border-border">
             {
               heroFacts.map(({ title, subtitle }) => (
                 <p class="text-2xl font-bold text-[#0a6802]">
