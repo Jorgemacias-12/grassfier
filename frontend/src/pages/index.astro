@@ -1,8 +1,8 @@
 ---
-import Footer from "../components/footer.astro";
-import Header from "../components/header.astro";
-import { heroFacts } from "../data";
-import Layout from "../layouts/Layout.astro";
+import Footer from "@/components/footer.astro";
+import Header from "@/components/header.astro";
+import { featureList, heroFacts } from "@/data";
+import Layout from "@/layouts/Layout.astro";
 
 import { ArrowRight } from "@lucide/astro";
 ---
@@ -64,6 +64,38 @@ import { ArrowRight } from "@lucide/astro";
             alt="leaf image"
           />
         </div>
+      </section>
+    </main>
+  </article>
+
+  <article class="py-20 md:py-32">
+    <main class="container px-4 mx-auto">
+      <section class="text-center mb-16">
+        <h3 class="text-3xl md:text-4xl font-bold text-foreground mb-4">
+          Características Principales
+        </h3>
+
+        <p class="text-lg text-[#636363] max-w-2xl mx-auto">
+          Grassfier ofrece herramientas avanzadas para optimizar la gestión de
+          tus cultivos
+        </p>
+      </section>
+      <section class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {
+          featureList.map(({ caption, icon: Icon, title }) => (
+            <article class="border shadow-lg p-4 bg-white rounded-md gap-2 flex flex-col">
+              <header class="flex items-center gap-2">
+                <span class="p-3 bg-[#0a6802]/10 text-[#0a6802] rounded-lg w-fit">
+                  <Icon />
+                </span>
+                <h4 class="text-lg font-semibold text-foreground">{title}</h4>
+              </header>
+              <main>
+                <p class="text-sm text-[#636363]">{caption}</p>
+              </main>
+            </article>
+          ))
+        }
       </section>
     </main>
   </article>

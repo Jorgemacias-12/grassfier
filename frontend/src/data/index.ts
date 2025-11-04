@@ -1,3 +1,12 @@
+import {
+  ChartColumn,
+  Clock,
+  Leaf,
+  Shield,
+  Smartphone,
+  Zap,
+} from "@lucide/astro";
+
 export const navigationItems = [
   {
     title: "Clasificador",
@@ -98,3 +107,43 @@ export const footerSocialLinks = [
 ];
 
 export type FooterSocialLinks = typeof footerSocialLinks;
+
+export const featureList = [
+  {
+    icon: Leaf,
+    title: "Detección Precisa",
+    caption:
+      "Identifica más de 50 enfermedades comunes en plantas con 98% de precisión",
+  },
+  {
+    icon: Zap,
+    title: "Análisis Instantáneo",
+    caption: "Obtén resultados en segundos, no en horas o días",
+  },
+  {
+    icon: ChartColumn,
+    title: "Reportes Detallados",
+    caption:
+      "Análisis completo con recomendaciones de tratamiento personalizadas",
+  },
+  {
+    icon: Shield,
+    title: "Protección de Cultivos",
+    caption:
+      "Intervención temprana para maximizar rendimiento y minimizar pérdidas",
+  },
+  {
+    icon: Clock,
+    title: "Monitoreo Continuo",
+    caption:
+      "Realiza seguimiento del progreso de tus plantas a lo largo del tiempo",
+  },
+  {
+    icon: Smartphone,
+    title: "Acceso Móvil",
+    caption:
+      "Analiza tus plantas desde cualquier lugar con tu dispositivo móvil",
+  },
+];
+
+export type FeatureList = typeof featureList;
