@@ -16,8 +16,23 @@ export interface ImageData {
   file: File;
 }
 
-export interface PredicttionResult {
-  label: string;
-  confidence: number;
-  message?: string;
+export interface Payload {
+  message: string;
+  image_info: ServerImageData;
+  prediction?: string;
+}
+
+export interface ServerImageData {
+  filename: string;
+  content_type: string;
+  file_size: number;
+  image_format: string | null;
+  image_size: string;
+  image_mode: string;
+}
+
+export interface ApiResponse {
+  success: boolean;
+  data?: Payload;
+  errors?: string[];
 }

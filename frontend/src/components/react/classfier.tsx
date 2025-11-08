@@ -1,118 +1,83 @@
-import { CircleCheck, Upload, X, FileImage } from "lucide-react";
-import { useRef, useState } from "react";
-
-// Interfaces para TypeScript
-interface ImageDimensions {
-  width: number;
-  height: number;
-}
-
-interface ImageInfo {
-  name: string;
-  size: number;
-  type: string;
-  lastModified: number;
-  dimensions: ImageDimensions;
-}
-
-interface ImageData {
-  url: string;
-  file: File;
-}
+import type { ImageInfo, ImageData, ApiResponse } from "@/types";
+import { X, Upload, AlertTriangle, CircleCheck, FileImage } from "lucide-react";
+import { useState, useRef } from "react";
 
 export const Classifier = () => {
   const [image, setImage] = useState<ImageData | null>(null);
   const [imageInfo, setImageInfo] = useState<ImageInfo | null>(null);
-  const [isDragOver, setIsDragOver] = useState<boolean>(false);
-  const [success, setSuccess] = useState<boolean>(false);
+  const [isDragOver, setIsDragOver] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [apiResponse, setApiResponse] = useState<ApiResponse | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Manejar selección de archivos
   const handleFileSelect = (
     event: React.ChangeEvent<HTMLInputElement>
   ): void => {
     const files = event.target.files;
     if (files && files.length > 0) {
       const file = files[0];
-      if (file.type.startsWith("image/")) {
-        processImageFile(file);
-      }
+      if (file.type.startsWith("image/")) processImageFile(file);
     }
   };
 
-  // Procesar archivo de imagen
   const processImageFile = (file: File): void => {
     const reader = new FileReader();
-
     reader.onload = (e: ProgressEvent<FileReader>) => {
       if (e.target && typeof e.target.result === "string") {
         const img = new Image();
         img.onload = () => {
-          setImage({
-            url: e.target!.result as string,
-            file: file,
-          });
+          setImage({ url: e.target!.result as string, file });
           setImageInfo({
             name: file.name,
             size: file.size,
             type: file.type,
             lastModified: file.lastModified,
-            dimensions: {
-              width: img.width,
-              height: img.height,
-            },
+            dimensions: { width: img.width, height: img.height },
           });
           setSuccess(true);
+          setApiResponse(null);
+          setError(null);
         };
         img.src = e.target.result as string;
       }
     };
-
     reader.readAsDataURL(file);
   };
 
-  // Manejar drag and drop
-  const handleDragOver = (event: React.DragEvent<HTMLDivElement>): void => {
-    event.preventDefault();
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>): void => {
+    e.preventDefault();
     setIsDragOver(true);
   };
 
-  const handleDragLeave = (event: React.DragEvent<HTMLDivElement>): void => {
-    event.preventDefault();
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>): void => {
+    e.preventDefault();
     setIsDragOver(false);
   };
 
-  const handleDrop = (event: React.DragEvent<HTMLDivElement>): void => {
-    event.preventDefault();
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>): void => {
+    e.preventDefault();
     setIsDragOver(false);
-
-    const files = event.dataTransfer.files;
-    if (files.length > 0) {
-      const file = files[0];
-      if (file.type.startsWith("image/")) {
-        processImageFile(file);
-      }
+    const files = e.dataTransfer.files;
+    if (files.length > 0 && files[0].type.startsWith("image/")) {
+      processImageFile(files[0]);
     }
   };
 
-  // Abrir selector de archivos
   const handleButtonClick = (): void => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
+    fileInputRef.current?.click();
   };
 
-  // Eliminar imagen
   const handleRemoveImage = (): void => {
     setImage(null);
     setImageInfo(null);
     setSuccess(false);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
+    setApiResponse(null);
+    setError(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-  // Formatear tamaño del archivo
   const formatFileSize = (bytes: number): string => {
     if (bytes === 0) return "0 Bytes";
     const k = 1024;
@@ -121,12 +86,34 @@ export const Classifier = () => {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
-  // Prevenir la propagación del evento click
-  const handleButtonClickPrevent = (
-    event: React.MouseEvent<HTMLButtonElement>
-  ): void => {
-    event.stopPropagation();
-    handleButtonClick();
+  const handlePredict = async (): Promise<void> => {
+    if (!image) return;
+
+    setLoading(true);
+    setApiResponse(null);
+    setError(null);
+
+    try {
+      const formData = new FormData();
+      formData.append("file", image.file);
+
+      const res = await fetch("http://localhost:8000/api/predict", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data: ApiResponse = await res.json();
+
+      if (!data.success) {
+        setError(data.errors?.join(", ") ?? "Error desconocido");
+      } else {
+        setApiResponse(data);
+      }
+    } catch (err) {
+      setError("No se pudo conectar con el servidor.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -143,7 +130,6 @@ export const Classifier = () => {
         </div>
 
         <div className="max-w-4xl w-full h-auto mx-auto px-4 py-8 rounded-md flex flex-col md:flex-row items-center gap-4">
-          {/* Área de Drag & Drop */}
           <div
             className={`border-2 w-full gap-4 rounded-md border-dashed hover:border-[#0a6802]/50 cursor-pointer p-4 flex flex-col items-center justify-center bg-white shadow-md transition-all duration-200 ${
               isDragOver ? "border-[#0a6802] bg-[#f0f9ff]" : "border-[#d1d5db]"
@@ -201,20 +187,20 @@ export const Classifier = () => {
                 </section>
 
                 <button
-                  className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-9 px-4 py-2 has-[>svg]:px-3 bg-[#0a6802] hover:bg-[#0a6802]/90 text-white"
-                  onClick={handleButtonClickPrevent}
+                  className="inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium transition-all h-9 px-4 py-2 bg-[#0a6802] hover:bg-[#0a6802]/90 text-white"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleButtonClick();
+                  }}
                   type="button"
                 >
                   Seleccionar archivo
                 </button>
 
-                <p className="text-sm text-[#636363]">
-                  PNG, JPG, GIF hasta 10MiB
-                </p>
+                <p className="text-sm text-[#636363]">PNG, JPG hasta 10 MiB</p>
               </>
             )}
 
-            {/* Input oculto */}
             <input
               ref={fileInputRef}
               type="file"
@@ -226,18 +212,26 @@ export const Classifier = () => {
 
           <hr className="w-full md:w-[1px] md:h-full border" />
 
-          {/* Panel de resultados */}
           <div className="bg-white flex items-center flex-col gap-6 rounded-xl border p-8 w-full md:max-w-md">
-            {success && imageInfo ? (
+            {loading ? (
+              <div className="w-full text-center">
+                <div className="animate-spin rounded-full h-10 w-10 border-4 border-[#0a6802]/40 border-t-[#0a6802] mx-auto mb-4"></div>
+                <p className="text-[#636363] text-sm">Analizando imagen...</p>
+              </div>
+            ) : error ? (
+              <div className="w-full text-center text-red-600">
+                <AlertTriangle className="mx-auto mb-2" size={32} />
+                <p className="text-sm">{error}</p>
+              </div>
+            ) : success && imageInfo ? (
               <div className="w-full">
                 <div className="flex items-center gap-3 mb-6">
                   <CircleCheck color="#0a6802" size={32} />
                   <h3 className="text-lg font-semibold text-foreground">
-                    Imagen Lista para Análisis
+                    Imagen lista para análisis
                   </h3>
                 </div>
 
-                {/* Propiedades de la imagen */}
                 <div className="space-y-3">
                   <div className="flex items-center gap-2 text-sm">
                     <FileImage size={16} className="text-[#636363]" />
@@ -261,25 +255,32 @@ export const Classifier = () => {
                     <span className="font-medium">Dimensiones:</span>
                     <span className="text-[#636363]">
                       {imageInfo.dimensions.width} ×{" "}
-                      {imageInfo.dimensions.height} px
-                    </span>
-                  </div>
-
-                  <div className="flex items-center gap-2 text-sm">
-                    <span className="font-medium">Tipo:</span>
-                    <span className="text-[#636363] capitalize">
-                      {imageInfo.type.split("/")[1]}
+                      {imageInfo.dimensions.height}px
                     </span>
                   </div>
                 </div>
 
-                {/* Botón de análisis */}
-                <button
-                  className="w-full mt-6 inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] h-10 px-4 py-2 has-[>svg]:px-3 bg-[#0a6802] hover:bg-[#0a6802]/90 text-white"
-                  type="button"
-                >
-                  Iniciar Análisis
-                </button>
+                {!apiResponse ? (
+                  <button
+                    className="w-full mt-6 inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium transition-all h-10 px-4 py-2 bg-[#0a6802] hover:bg-[#0a6802]/90 text-white"
+                    type="button"
+                    onClick={handlePredict}
+                  >
+                    Iniciar Análisis
+                  </button>
+                ) : (
+                  <div className="mt-6 border-t pt-4">
+                    <h4 className="text-base font-semibold text-foreground mb-2">
+                      Resultado del análisis:
+                    </h4>
+                    <p className="text-sm text-[#0a6802] font-medium mb-1">
+                      {apiResponse.data?.prediction ?? "Pendiente"}
+                    </p>
+                    <p className="text-xs text-[#636363]">
+                      {apiResponse.data?.message ?? ""}
+                    </p>
+                  </div>
+                )}
               </div>
             ) : (
               <>
