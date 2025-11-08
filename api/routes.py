@@ -26,20 +26,53 @@ async def predict(request: Request, file: UploadFile = File(...)) -> dict:
     """
     Endpoint to receive an image file and perform prediction.
     """
-    if file.content_type not in ALLOWED_CONTENT_TYPES:
-        # TODO: send json data
-        raise HTTPException(status_code=400, detail="")
+    error_response = {
+        "success": False,
+        "errors": []
+    }
 
-    contents = await file.read()
-
-    if len(contents) > MAX_FILE_SIZE:
-        # TODO: send json data
-        raise HTTPException(status_code=400, detail="")
+    has_error = False
 
     try:
-        image = Image.open(BytesIO(contents)).convert("RGB")
-    except Exception:
-        # TODO: send json data
-        raise HTTPException(status_code=500, detail="")
+        if file.content_type not in ALLOWED_CONTENT_TYPES:
+            error_response["errors"].append(
+                f"Tipo de archivo no permitido. Tipos permitidos: {', '.join(ALLOWED_CONTENT_TYPES)}")
 
-    return {}
+            has_error = True
+
+        contents = await file.read()
+
+        if len(contents) > MAX_FILE_SIZE:
+            error_response["errors"].append(
+                f"Archivo demasiado grande. Tamaño máximo: {MAX_FILE_SIZE} bytes"
+            )
+
+            has_error = True
+
+        if has_error:
+            return error_response
+
+        image = Image.open(BytesIO(contents)).convert("RGB")
+
+        image_info = {
+            "filename": file.filename,
+            "content_type": file.content_type,
+            "file_size": len(contents),
+            "image_format": image.format,
+            "image_size": f"{image.width}x{image.height}",
+            "image_mode": image.mode
+        }
+
+        return {
+            "success": True,
+            "data": {
+                "message": "Imagen procesada exitosamente",
+                "image_info": image_info,
+                "prediction": "pending"
+            }
+        }
+    except Exception as e:
+        error_response["errors"].append(
+            f"Error al procesar la imagen: {str(e)}")
+
+        return error_response
